@@ -4,7 +4,7 @@
   
 ![AI Journal Banner](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=AI%20Journal&fontSize=80&fontAlignY=35&animation=twinkling&fontColor=ffffff)
 
-[![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red.svg)](https://github.com/Hsinha11)
+[![Made with Love](https://img.shields.io/badge/Made%20with-❤️-white.svg)](https://github.com/Hsinha11)
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-5.0-purple.svg)](https://vitejs.dev/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.0-teal.svg)](https://tailwindcss.com/)
@@ -102,7 +102,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-### Made with ❤️ by [Harsh Sinha](https://github.com/Hsinha11)
+### Made with ❤️ by [Harianant Sinha](https://github.com/Hsinha11)
 
 [![Follow on GitHub](https://img.shields.io/github/followers/Hsinha11?label=Follow&style=social)](https://github.com/Hsinha11)
 
