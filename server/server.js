@@ -52,7 +52,7 @@ const checkAdmin = (req, res, next) => {
 };
 
 // --- Routes ---
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
         return res
@@ -77,19 +77,23 @@ app.post("/login", async (req, res) => {
             name: user.username,
             isAdmin: user.username === "admin", // Keep your admin logic
         };
-        const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign(userPayload, JWT_SECRET);
         res.json({ token });
+        console.log(`User ${user.username} logged in.`); 
+        // console.log(token);
+        // Logging the username
+        
     } catch (error) {
         res.status(500).json({ error: "Server error during login." });
     }
 });
 
-app.get("/admin", authenticateToken, checkAdmin, (req, res) => {
+app.get("/api/admin", authenticateToken, checkAdmin, (req, res) => {
     res.json({
         message: `Welcome, Admin ${req.user.name}! You have accessed the admin-only area.`,
     });
 });
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
         return res.status(400).json({ error: "All fields are required." });
@@ -168,6 +172,32 @@ app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Server error while deleting entry.' });
     }
 });
+
+
+app.put('/api/entries/:id',authenticateToken, async (req,res)=>{
+     try{
+        const {content} = req.body;
+        const entryId = req.params.id;
+        const userId = req.user.id;
+        if (!content){
+            return res.status(400).json({error:'Content cannot be empty'});
+        }
+        const updatedEntry = await JournalEntry.findOneAndUpdate(
+            {_id:entryId,author:userId },
+
+            {content:content},
+            {new:true}
+        )
+        if(!updatedEntry){
+            return res.status(404).json({error:"Entry not found or user not authorized"})
+        }
+        res.status(200).json(updatedEntry);
+     }catch( error){
+        res.status(500).json({error:"Server error while updating entry"})
+     }
+})
+
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
