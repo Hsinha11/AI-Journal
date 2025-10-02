@@ -69,36 +69,75 @@ const JournalFeed = ({
                                                 <div className="flex items-center gap-2">
                                                     <div className="h-2 w-2 rounded-full bg-purple-500"></div>
                                                     <span className="text-sm font-medium text-gray-400 flex items-center gap-2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-3.5 w-3.5"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth={2}
+                                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                            />
                                                         </svg>
-                                                        Created: {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                                                            weekday: "long",
-                                                            year: "numeric",
-                                                            month: "long",
-                                                            day: "numeric",
-                                                            hour: "2-digit",
-                                                            minute: "2-digit"
-                                                        })}
-                                                    </span>
-                                                </div>
-                                                {entry.updatedAt && entry.updatedAt !== entry.createdAt && (
-                                                    <div className="flex items-center gap-2 ml-4">
-                                                        <span className="text-xs font-medium text-gray-400 flex items-center gap-2">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                            Updated: {new Date(entry.updatedAt).toLocaleDateString("en-US", {
+                                                        Created:{" "}
+                                                        {new Date(
+                                                            entry.createdAt
+                                                        ).toLocaleDateString(
+                                                            "en-US",
+                                                            {
                                                                 weekday: "long",
                                                                 year: "numeric",
                                                                 month: "long",
                                                                 day: "numeric",
                                                                 hour: "2-digit",
-                                                                minute: "2-digit"
-                                                            })}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                                minute: "2-digit",
+                                                            }
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                {/* {entry.updatedAt &&
+                                                    entry.updatedAt !==
+                                                        entry.createdAt && (
+                                                        <div className="flex items-center gap-2 ml-4">
+                                                            <span className="text-xs font-medium text-gray-400 flex items-center gap-2">
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    className="h-3.5 w-3.5"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={
+                                                                            2
+                                                                        }
+                                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                                    />
+                                                                </svg>
+                                                                Updated:{" "}
+                                                                {new Date(
+                                                                    entry.updatedAt
+                                                                ).toLocaleDateString(
+                                                                    "en-US",
+                                                                    {
+                                                                        weekday:
+                                                                            "long",
+                                                                        year: "numeric",
+                                                                        month: "long",
+                                                                        day: "numeric",
+                                                                        hour: "2-digit",
+                                                                        minute: "2-digit",
+                                                                    }
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    )} */}
                                             </div>
                                             <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-wrap">
                                                 {entry.content}
