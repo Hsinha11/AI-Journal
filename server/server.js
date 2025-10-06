@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -18,6 +19,13 @@ const JWT_SECRET =
     process.env.JWT_SECRET || "a-very-long-and-secure-random-string-for-dev";
 
 const app = express();
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 const port = 8000;
 app.use(express.json());
 
