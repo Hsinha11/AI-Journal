@@ -3,12 +3,14 @@ import Header from "../components/Header.jsx";
 import JournalForm from "../components/JournalForm.jsx";
 import JournalFeed from "../components/JournalFeed.jsx";
 import { useAuth } from "../context/AuthContext";
+import Search from "../components/Search.jsx";
 
 function JournalPage() {
     // const mockUser = { name: "John" };
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchResults, setSearchResults] = useState(null);
     const [editingEntryId, setEditingEntryId] = useState(null);
     const { user, token } = useAuth(); // 2. Get the token from the context
     useEffect(() => {
@@ -89,15 +91,37 @@ function JournalPage() {
     const handleCancelEdit = () => {
         setEditingEntryId(null);
     };
-
+    const handleSearch = async (query) => {
+        if (!query.trim()) {
+            setSearchResults(null);
+            return;
+        }
+        try {
+            setError(null);
+            setLoading(true);
+            const encodedQuery = encodeURIComponent(query);
+            const response = await fetch(`/api/search?q=${encodedQuery}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error("Search failed.");
+            const data = await response.json();
+            setSearchResults(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const displayEntries = searchResults !== null ? searchResults : entries;
     return (
         // Main container for the whole application
         <div className="min-h-screen min-w-screen bg-slate-50 text-slate-900">
             <Header />
             <main className="p-8">
                 <JournalForm user={user} onEntryAdded={handleEntryAdded} />
+                <Search onSearch={handleSearch} loading={loading} />
                 <JournalFeed
-                    entries={entries}
+                    entries={displayEntries}
                     loading={loading}
                     error={error}
                     onDelete={handleDelete}

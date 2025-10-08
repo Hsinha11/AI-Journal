@@ -1,5 +1,4 @@
-// server/src/models/JournalEntry.js
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const journalEntrySchema = new Schema({
@@ -22,4 +21,4 @@ const journalEntrySchema = new Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('JournalEntry', journalEntrySchema);
+export default mongoose.model('JournalEntry', journalEntrySchema);

@@ -1,12 +1,13 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import mongoose from "mongoose";
+import User from "./models/User.js";
+import JournalEntry from './models/JournalEntry.js';
+import aiService from "./src/services/aiService.js";
 const saltRounds = 10;
-const mongoose = require("mongoose");
-const User = require("./models/User.js"); // Assuming your model is in 'models/User.js'
-const JournalEntry = require('./models/JournalEntry.js');
 // Replace this with your actual connection string from Atlas
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -127,23 +128,36 @@ app.post("/api/register", async (req, res) => {
     }
 });
 
-app.post('/api/entries', authenticateToken, async (req, res) => {
-    try {
-        const { content } = req.body;
-        if (!content) {
-            return res.status(400).json({ error: 'Content is required.' });
-        }
-
-        const newEntry = new JournalEntry({
-            content,
-            author: req.user.id // Get the user ID from the authenticated token payload
-        });
-
-        await newEntry.save();
-        res.status(201).json(newEntry);
-    } catch (error) {
-        res.status(500).json({ error: 'Server error creating entry.' });
+// In server/server.js
+app.post("/api/entries", authenticateToken, async (req, res) => {
+    const { content } = req.body;
+    if (!content) {
+        res.status(400);
+        throw new Error("Content is required.");
     }
+
+    // 1. Save the new entry to MongoDB (your source of truth)
+    const newEntry = await JournalEntry.create({
+        content,
+        author: req.user.id,
+    });
+
+    // 2. Immediately generate embedding and update the Pinecone index
+    try {
+        const embedding = await aiService.generateEmbedding(newEntry.content);
+        const metadata = {
+        content: newEntry.content.substring(0, 1000)
+    };
+        await aiService.upsertVector(newEntry._id.toString(), embedding, metadata);
+        console.log(`Successfully indexed new entry ${newEntry._id} in Pinecone with metadata.`);
+    } catch (aiError) {
+        // Log the error but don't cause the request to fail.
+        // Saving the user's entry is the top priority.
+        console.error("Real-time indexing to Pinecone failed:", aiError.message);
+    }
+
+    // 3. Send the success response to the client
+    res.status(201).json(newEntry);
 });
 
 // GET all journal entries for the logged-in user
@@ -155,7 +169,33 @@ app.get('/api/entries', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Server error fetching entries.' });
     }
 });
+// server/server.js
 
+app.delete("/api/entries/:id", authenticateToken, async (req, res) => {
+    const entryId = req.params.id;
+
+    // First, delete the entry from MongoDB
+    const deletedEntry = await JournalEntry.findOneAndDelete({
+        _id: entryId,
+        author: req.user.id
+    });
+
+    if (!deletedEntry) {
+        res.status(404);
+        throw new Error("Entry not found or user not authorized.");
+    }
+
+    // --- YOUR NEW LOGIC HERE ---
+    // Now, delete the corresponding vector from Pinecone
+    try {
+        await aiService.deleteVector(entryId);
+    } catch (aiError) {
+        // Log the error, but don't fail the request. Deleting from MongoDB is the priority.
+        console.error("Pinecone delete failed but entry was removed from MongoDB:", aiError.message);
+    }
+
+    res.json({ message: 'Entry deleted successfully from all databases.' });
+});
 app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
     try {
         const entryId = req.params.id;
@@ -181,7 +221,40 @@ app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
     }
 });
 
+app.put("/api/entries/:id", authenticateToken, async (req, res) => {
+    const { content } = req.body;
+    if (!content) {
+        res.status(400);
+        throw new Error("Content cannot be empty.");
+    }
 
+    // 1. Update the entry in MongoDB and get the new version
+    const updatedEntry = await JournalEntry.findOneAndUpdate(
+        { _id: req.params.id, author: req.user.id },
+        { content },
+        { new: true }
+    );
+
+    if (!updatedEntry) {
+        res.status(404);
+        throw new Error("Entry not found or user not authorized.");
+    }
+
+    // 2. Immediately update the Pinecone index with the new embedding
+    try {
+        const embedding = await aiService.generateEmbedding(updatedEntry.content);
+        const metadata = {
+        content: updatedEntry.content.substring(0, 1000)
+    };
+        await aiService.upsertVector(updatedEntry._id.toString(), embedding,metadata);
+        console.log(`Successfully updated vector for entry ${updatedEntry._id} in Pinecone with metadata`);
+    } catch (aiError) {
+        console.error("Pinecone update failed but entry was saved to MongoDB:", aiError.message);
+    }
+
+    // 3. Send the success response
+    res.json(updatedEntry);
+});
 app.put('/api/entries/:id',authenticateToken, async (req,res)=>{
      try{
         const {content} = req.body;
@@ -205,7 +278,45 @@ app.put('/api/entries/:id',authenticateToken, async (req,res)=>{
      }
 })
 
+// server/server.js
 
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+app.get("/api/search", authenticateToken,async (req, res) => {
+    const { q: query } = req.query;
+
+    if (!query) {
+        res.status(400);
+        throw new Error("A search query 'q' is required.");
+    }
+
+    // 1. Generate an embedding for the user's query
+    const queryEmbedding = await aiService.generateEmbedding(query);
+
+    // 2. Query Pinecone to get the IDs of the most relevant entries
+    const pineconeResponse = await aiService.queryVectors(queryEmbedding);
+    const ids = pineconeResponse.matches.map(match => match.id);
+
+    if (ids.length === 0) {
+        return res.json([]); // Return empty array if no matches
+    }
+
+    // 3. Fetch the full documents from MongoDB using the retrieved IDs
+    // We also ensure we only fetch entries belonging to the logged-in user for security
+    const entries = await JournalEntry.find({ 
+        '_id': { $in: ids },
+        'author': req.user.id 
+    });
+
+    // 4. Re-sort the MongoDB results to match Pinecone's relevance ranking
+    const entriesMap = new Map(entries.map(e => [e._id.toString(), e]));
+    const sortedEntries = ids.map(id => entriesMap.get(id)).filter(Boolean);
+    
+    res.json(sortedEntries);
 });
+const startServer = async () => {
+    await aiService.init();
+    app.listen(port, () => {
+        console.log(`Server listening at http://localhost:${port}`);
+    });
+};
+
+startServer();
