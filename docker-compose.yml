@@ -1,0 +1,23 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Backend Service Configuration
+  server:
+    build: ./server
+    container_name: ai-journal-server
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./server/.env
+    volumes:
+      - ./server/src:/usr/src/app/src # This syncs your local code for live updates
+
+  # Frontend Service Configuration
+  client:
+    build: ./client
+    container_name: ai-journal-client
+    ports:
+      - "5173:80"
+    depends_on:
+      - server # Tells the client to wait for the server to start

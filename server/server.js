@@ -11,13 +11,19 @@ const saltRounds = 10;
 // Replace this with your actual connection string from Atlas
 const MONGO_URI = process.env.MONGO_URI;
 
-mongoose
-    .connect(MONGO_URI)
-    .then(() => console.log("Successfully connected to MongoDB Atlas."))
-    .catch((err) => console.error("Connection error", err));
+// Initialize database connection before starting the server
+const initializeDatabase = async () => {
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log("Successfully connected to MongoDB Atlas.");
+    } catch (err) {
+        console.error("MongoDB Connection error:", err);
+        process.exit(1); // Exit if we can't connect to the database
+    }
+};
+
 // THIS MUST BE a long, random string from an environment variable in a real app.
-const JWT_SECRET =
-    process.env.JWT_SECRET || "a-very-long-and-secure-random-string-for-dev";
+const JWT_SECRET = process.env.JWT_SECRET || "a-very-long-and-secure-random-string-for-dev";
 
 const app = express();
 app.use(cors({
@@ -314,9 +320,11 @@ app.get("/api/search", authenticateToken,async (req, res) => {
 });
 const startServer = async () => {
     await aiService.init();
-    app.listen(port, () => {
-        console.log(`Server listening at http://localhost:${port}`);
-    });
+    // Start the server only after database connection is established
+    initializeDatabase().then(() => {
+        app.listen(8000, '0.0.0.0', () => {
+        console.log(`Server listening at http://localhost:${port}`);}
+    )});
 };
 
 startServer();
