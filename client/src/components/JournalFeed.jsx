@@ -1,5 +1,7 @@
 // src/components/JournalFeed.jsx
 import EditEntryForm from "./EditEntryForm";
+import GradientText from "./GradientText";
+// import ShinyText from './ShinyText';
 const JournalFeed = ({
     entries,
     loading,
@@ -41,10 +43,29 @@ const JournalFeed = ({
     return (
         <div className="mt-8 max-w-4xl mx-auto px-4">
             <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
-                <span className="bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text">
-                    Your Journal
+                <span>
+                    <GradientText
+                        colors={[
+                            "#7c3aed",
+                            "#3b82f6",
+                            "#7c3aed",
+                            "#3b82f6",
+                            "#7c3aed",
+                            "#3b82f6",
+                        ]}
+                        animationSpeed={5}
+                        showBorder={false}
+                    >
+                        Your Journal
+                    </GradientText>
                 </span>
                 <span className="text-lg font-normal text-gray-400">
+                    {/* <ShinyText
+                        text="Just some shiny text!"
+                        disabled={false}
+                        speed={3}
+                        className="custom-class"
+                    /> */}
                     ✨ Reflect & Grow
                 </span>
             </h2>

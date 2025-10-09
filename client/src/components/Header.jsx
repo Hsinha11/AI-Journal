@@ -1,4 +1,5 @@
 // src/components/Header.jsx
+import GradientText from './GradientText';
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -15,8 +16,22 @@ function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text">
-                JournalAI
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text">
+                {/* JournalAI */}
+                <GradientText
+                                        colors={[
+                                            "#7c3aed",
+                                            "#3b82f6",
+                                            "#7c3aed",
+                                            "#3b82f6",
+                                            "#7c3aed",
+                                            "#3b82f6",
+                                        ]}
+                                        animationSpeed={6}
+                                        showBorder={false}
+                                    >
+                                        JournalAI
+                                    </GradientText>
               </h2>
             </Link>
           </div>

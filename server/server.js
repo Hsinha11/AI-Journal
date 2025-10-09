@@ -74,6 +74,10 @@ app.post("/api/login", async (req, res) => {
             .status(400)
             .json({ error: "Email and password are required." });
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format." });
+    }
     try {
         const user = await User.findOne({ email: email });
         if (!user) {
@@ -112,6 +116,11 @@ app.post("/api/register", async (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
         return res.status(400).json({ error: "All fields are required." });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format." });
     }
     try {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
