@@ -5,10 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true
-      }
+      // This forwards any request starting with /api to your backend
+      '/api': 'http://localhost:8000'
     }
   }
 })

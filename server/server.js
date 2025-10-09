@@ -67,7 +67,7 @@ const checkAdmin = (req, res, next) => {
 };
 
 // --- Routes ---
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
         return res
@@ -103,12 +103,12 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/admin", authenticateToken, checkAdmin, (req, res) => {
+app.get("/api/admin", authenticateToken, checkAdmin, (req, res) => {
     res.json({
         message: `Welcome, Admin ${req.user.name}! You have accessed the admin-only area.`,
     });
 });
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
         return res.status(400).json({ error: "All fields are required." });
@@ -135,7 +135,7 @@ app.post("/register", async (req, res) => {
 });
 
 // In server/server.js
-app.post("/entries", authenticateToken, async (req, res) => {
+app.post("/api/entries", authenticateToken, async (req, res) => {
     const { content } = req.body;
     if (!content) {
         res.status(400);
@@ -167,7 +167,7 @@ app.post("/entries", authenticateToken, async (req, res) => {
 });
 
 // GET all journal entries for the logged-in user
-app.get('/entries', authenticateToken, async (req, res) => {
+app.get('/api/entries', authenticateToken, async (req, res) => {
     try {
         const entries = await JournalEntry.find({ author: req.user.id }).sort({ createdAt: -1 });
         res.json(entries);
@@ -177,7 +177,7 @@ app.get('/entries', authenticateToken, async (req, res) => {
 });
 // server/server.js
 
-app.delete("/entries/:id", authenticateToken, async (req, res) => {
+app.delete("/api/entries/:id", authenticateToken, async (req, res) => {
     const entryId = req.params.id;
 
     // First, delete the entry from MongoDB
@@ -202,7 +202,7 @@ app.delete("/entries/:id", authenticateToken, async (req, res) => {
 
     res.json({ message: 'Entry deleted successfully from all databases.' });
 });
-app.delete('/entries/:id', authenticateToken, async (req, res) => {
+app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
     try {
         const entryId = req.params.id;
         const userId = req.user.id;
@@ -227,7 +227,7 @@ app.delete('/entries/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.put("/entries/:id", authenticateToken, async (req, res) => {
+app.put("/api/entries/:id", authenticateToken, async (req, res) => {
     const { content } = req.body;
     if (!content) {
         res.status(400);
@@ -261,7 +261,7 @@ app.put("/entries/:id", authenticateToken, async (req, res) => {
     // 3. Send the success response
     res.json(updatedEntry);
 });
-app.put('/entries/:id',authenticateToken, async (req,res)=>{
+app.put('/api/entries/:id',authenticateToken, async (req,res)=>{
      try{
         const {content} = req.body;
         const entryId = req.params.id;
@@ -286,7 +286,7 @@ app.put('/entries/:id',authenticateToken, async (req,res)=>{
 
 // server/server.js
 
-app.get("/search", authenticateToken,async (req, res) => {
+app.get("/api/search", authenticateToken,async (req, res) => {
     const { q: query } = req.query;
 
     if (!query) {
