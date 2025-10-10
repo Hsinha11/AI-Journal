@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Trigger Render Deploy
+
+      - name: Trigger Backend Deploy
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK_SERVER }}
-      # Our next steps for building and deploying will go here.
+      
+      - name: Trigger Frontend Deploy
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_CLIENT }}
