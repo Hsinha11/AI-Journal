@@ -1,11 +1,17 @@
 // src/components/EditEntryForm.jsx
 import React, { useState } from 'react';
 
+/**
+ * A form for editing a journal entry.
+ * @param {object} props - The component's props.
+ * @param {object} props.entry - The journal entry to edit.
+ * @param {function} props.onSave - The function to call when the entry is saved.
+ * @param {function} props.onCancel - The function to call when the editing is canceled.
+ * @returns {JSX.Element} The rendered component.
+ */
 const EditEntryForm = ({ entry, onSave, onCancel }) => {
-    // 1. Create local state to manage the textarea, initialized with the original entry's content.
     const [editedContent, setEditedContent] = useState(entry.content);
 
-    // 2. When save is clicked, call the onSave prop with the entry's ID and the new content.
     const handleSave = () => {
         onSave(entry._id, editedContent);
     };

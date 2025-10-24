@@ -3,6 +3,12 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 const AuthContext = createContext(null);
 
+/**
+ * Provides authentication context to the application.
+ * @param {object} props - The component's props.
+ * @param {React.ReactNode} props.children - The child components.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const AuthProvider = ({ children }) => {
     // Check localStorage for a token on initial load
     const initialToken = localStorage.getItem('token');
@@ -21,6 +27,13 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token]);
 
+    /**
+     * Registers a new user.
+     * @param {string} username - The user's username.
+     * @param {string} email - The user's email.
+     * @param {string} password - The user's password.
+     * @returns {Promise<Response>} The response from the server.
+     */
     const register = async (username, email, password) => {
         // This function now returns the response to the component
         return fetch('/api/register', {
@@ -30,6 +43,12 @@ export const AuthProvider = ({ children }) => {
         });
     };
 
+    /**
+     * Logs in a user.
+     * @param {string} email - The user's email.
+     * @param {string} password - The user's password.
+     * @returns {Promise<Response>} The response from the server.
+     */
     const login = async (email, password) => {
         const response = await fetch('/api/login', {
             method: 'POST',
@@ -44,6 +63,9 @@ export const AuthProvider = ({ children }) => {
         return response; // Return the full response for the component to handle
     };
 
+    /**
+     * Logs out the current user.
+     */
     const logout = () => {
         setToken(null);
         setUser(null);
@@ -58,6 +80,10 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
+/**
+ * A hook for accessing the authentication context.
+ * @returns {object} The authentication context.
+ */
 export const useAuth = () => {
     return useContext(AuthContext);
 };

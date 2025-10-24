@@ -1,7 +1,19 @@
 // src/components/JournalFeed.jsx
 import EditEntryForm from "./EditEntryForm";
 import GradientText from "./GradientText";
-// import ShinyText from './ShinyText';
+/**
+ * A component that displays a feed of journal entries.
+ * @param {object} props - The component's props.
+ * @param {object[]} props.entries - The journal entries to display.
+ * @param {boolean} props.loading - Whether the entries are loading.
+ * @param {string} props.error - An error message to display.
+ * @param {function} props.onDelete - The function to call when an entry is deleted.
+ * @param {string} props.editingEntryId - The ID of the entry being edited.
+ * @param {function} props.onEditStart - The function to call when an entry is edited.
+ * @param {function} props.onCancelEdit - The function to call when editing is canceled.
+ * @param {function} props.onUpdate - The function to call when an entry is updated.
+ * @returns {JSX.Element} The rendered component.
+ */
 const JournalFeed = ({
     entries,
     loading,

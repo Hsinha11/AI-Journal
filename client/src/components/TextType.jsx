@@ -3,6 +3,29 @@
 import { useEffect, useRef, useState, createElement, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 
+/**
+ * A component that displays text with a typing effect.
+ * @param {object} props - The component's props.
+ * @param {string|string[]} props.text - The text to display.
+ * @param {React.ElementType} props.as - The component to render as.
+ * @param {number} props.typingSpeed - The speed of the typing animation.
+ * @param {number} props.initialDelay - The initial delay before the animation starts.
+ * @param {number} props.pauseDuration - The duration to pause between sentences.
+ * @param {number} props.deletingSpeed - The speed of the deleting animation.
+ * @param {boolean} props.loop - Whether to loop the animation.
+ * @param {string} props.className - The CSS class to apply to the component.
+ * @param {boolean} props.showCursor - Whether to show a cursor.
+ * @param {boolean} props.hideCursorWhileTyping - Whether to hide the cursor while typing.
+ * @param {string} props.cursorCharacter - The character to use for the cursor.
+ * @param {string} props.cursorClassName - The CSS class to apply to the cursor.
+ * @param {number} props.cursorBlinkDuration - The duration of the cursor blink.
+ * @param {string[]} props.textColors - The colors to use for the text.
+ * @param {{min: number, max: number}} props.variableSpeed - The variable speed of the typing animation.
+ * @param {function} props.onSentenceComplete - The function to call when a sentence is complete.
+ * @param {boolean} props.startOnVisible - Whether to start the animation when the component is visible.
+ * @param {boolean} props.reverseMode - Whether to reverse the animation.
+ * @returns {JSX.Element} The rendered component.
+ */
 const TextType = ({
   text,
   as: Component = 'div',

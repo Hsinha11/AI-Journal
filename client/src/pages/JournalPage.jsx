@@ -5,6 +5,10 @@ import JournalFeed from "../components/JournalFeed.jsx";
 import { useAuth } from "../context/AuthContext";
 import Search from "../components/Search.jsx";
 
+/**
+ * The main page for the journal.
+ * @returns {JSX.Element} The rendered component.
+ */
 function JournalPage() {
     // const mockUser = { name: "John" };
     const [entries, setEntries] = useState([]);
@@ -14,6 +18,9 @@ function JournalPage() {
     const [editingEntryId, setEditingEntryId] = useState(null);
     const { user, token } = useAuth(); // 2. Get the token from the context
     useEffect(() => {
+        /**
+         * Fetches the journal entries from the server.
+         */
         const fetchEntries = async () => {
             try {
                 const response = await fetch("/api/entries", {

@@ -4,6 +4,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * The authentication page.
+ * @returns {JSX.Element} The rendered component.
+ */
 const AuthPage = () => {
   const [isLoginMode,setIsLoginMode] = useState(true);
   const [email, setEmail] = useState("")
@@ -13,7 +17,10 @@ const AuthPage = () => {
   const { login, register } = useAuth();
   const navigate = useNavigate();
     
-    // --- UI SKELETON (Provided) ---
+    /**
+     * Handles the form submission.
+     * @param {React.FormEvent<HTMLFormElement>} event - The form event.
+     */
     async function handleSubmit(event) {
       event.preventDefault();
       if (isLoginMode){

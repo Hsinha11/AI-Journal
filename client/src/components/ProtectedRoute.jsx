@@ -3,6 +3,12 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * A component that protects a route from unauthenticated users.
+ * @param {object} props - The component's props.
+ * @param {React.ReactNode} props.children - The child components to render.
+ * @returns {JSX.Element} The rendered component.
+ */
 const ProtectedRoute = ({ children }) => {
     const { token } = useAuth();
     console.log('ProtectedRoute: Checking for token. Value is:', token);
