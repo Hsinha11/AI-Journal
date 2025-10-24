@@ -6,14 +6,20 @@ import AuthPage from './pages/AuthPage';
 import JournalPage from './pages/JournalPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
+/**
+ * The main component of the application.
+ * @returns {JSX.Element} The rendered component.
+ */
 function App() {
   const { token } = useAuth();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // This useEffect now lives in App and depends on the token
   useEffect(() => {
+    /**
+     * Fetches the journal entries from the server.
+     */
     const fetchEntries = async () => {
       try {
         setLoading(true);

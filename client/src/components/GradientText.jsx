@@ -1,3 +1,13 @@
+/**
+ * A component that displays text with a gradient.
+ * @param {object} props - The component's props.
+ * @param {React.ReactNode} props.children - The text to display.
+ * @param {string} props.className - The CSS class to apply to the component.
+ * @param {string[]} props.colors - The colors to use for the gradient.
+ * @param {number} props.animationSpeed - The speed of the gradient animation.
+ * @param {boolean} props.showBorder - Whether to show a border around the text.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function GradientText({
   children,
   className = '',

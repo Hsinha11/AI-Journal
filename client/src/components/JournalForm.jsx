@@ -1,12 +1,21 @@
 // src/components/JournalForm.jsx
-import React, { useState } from "react"; // 1. Import useState hook
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import TextType from "./TextType";
-// 2. Destructure `user` from the props object
+/**
+ * A form for creating a new journal entry.
+ * @param {object} props - The component's props.
+ * @param {function} props.onEntryAdded - The function to call when a new entry is added.
+ * @returns {JSX.Element} The rendered component.
+ */
 const JournalForm = ({ onEntryAdded }) => {
     const { user, token } = useAuth();
     const [entry, setEntry] = useState("");
 
+    /**
+     * Handles the change event of the textarea.
+     * @param {React.ChangeEvent<HTMLTextAreaElement>} event - The change event.
+     */
     const handleInputChange = (event) => {
         setEntry(event.target.value);
     };

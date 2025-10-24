@@ -14,72 +14,101 @@
 
 ## ✨ Features
 
-- 🤖 **AI-Enhanced Journaling** - Your personal AI companion for deeper self-reflection
-- 📝 **Rich Text Editor** - Express yourself with a beautiful, intuitive interface
-- 🔒 **Secure & Private** - Your thoughts are encrypted and protected
-- 🌙 **Dark/Light Mode** - Journal comfortably any time of day
-- 📱 **Responsive Design** - Perfect on any device
-- 🔄 **Real-time Sync** - Never lose a thought again
+- 🤖 **AI-Enhanced Journaling** - Your personal AI companion for deeper self-reflection.
+- 📝 **Rich Text Editor** - Express yourself with a beautiful, intuitive interface.
+- 🔒 **Secure & Private** - Your thoughts are encrypted and protected.
+- 🌙 **Dark/Light Mode** - Journal comfortably any time of day.
+- 📱 **Responsive Design** - Perfect on any device.
+- 🔄 **Real-time Sync** - Never lose a thought again.
 
-## � Quick Start
+## 🚀 Getting Started
 
-```bash
-# Clone the magic
-git clone https://github.com/Hsinha11/AI-Journal.git
+### Prerequisites
 
-# Enter the sanctuary
-cd ai-journal-app
+*   [Node.js](https://nodejs.org/en/download/) (v14 or later)
+*   [MongoDB](https://www.mongodb.com/try/download/community) (or a MongoDB Atlas account)
+*   [Pinecone](https://www.pinecone.io/) account for AI features.
 
-# Install client dependencies
-cd client
-npm install
+### Installation & Setup
 
-# Start the client
-npm run dev
+1.  **Clone the repository:**
+    ```sh
+    git clone https://github.com/Hsinha11/AI-Journal.git
+    cd AI-Journal
+    ```
 
-# In a new terminal, start the server
-cd ../server
-npm install
-npm start
-```
+2.  **Install server dependencies:**
+    ```sh
+    cd server
+    npm install
+    ```
 
-## 🎭 Tech Symphony
+3.  **Install client dependencies:**
+    ```sh
+    cd ../client
+    npm install
+    ```
 
-### Frontend Crescendo 🎨
+4.  **Set up environment variables:**
+    *   Create a `.env` file in the `server` directory.
+    *   Add the following variables:
+        ```
+        PORT=8000
+        MONGO_URI=your_mongodb_connection_string
+        PINECONE_API_KEY=your_pinecone_api_key
+        JWT_SECRET=a-very-long-and-secure-random-string-for-dev
+        ```
 
+### Running the Application
+
+1.  **Start the backend server:**
+    ```sh
+    cd server
+    npm start
+    ```
+
+2.  **Start the frontend development server:**
+    ```sh
+    cd ../client
+    npm run dev
+    ```
+
+The application will be available at `http://localhost:5173`.
+
+## 🎭 Tech Stack
+
+### Frontend
 - **React** - For beautiful UI composition
 - **Vite** - Lightning-fast development
 - **Tailwind CSS** - Stylish and responsive design
-- **Axios** - Smooth API communication
 
-### Backend Harmony 🎼
-
+### Backend
 - **Node.js** - Server-side excellence
 - **Express** - RESTful API orchestration
 - **MongoDB** - Data persistence perfection
 - **JWT** - Secure authentication
 
+### AI & Machine Learning
+- **Pinecone** - Vector database for semantic search
+- **@xenova/transformers** - For generating text embeddings
+
 ## 🌿 Project Structure
 
 ```
-
 ai-journal-app/
 ├── client/              # Frontend sanctuary
 │   ├── src/
 │   │   ├── components/  # UI building blocks
-│   │   └── styles/     # Visual enchantments
-│   └── public/         # Static treasures
+│   │   ├── context/
+│   │   ├── lib/
+│   │   └── pages/
+│   └── public/
 └── server/             # Backend fortress
     ├── models/         # Data blueprints
-    ├── routes/         # API pathways
-    └── config/         # Sacred configurations
+    ├── src/
+    │   └── services/
+    └── server.js
 ```
-
-## 🎨 Screenshots
-
-<div align="center">
-  <em>Coming soon with visual delights!</em>
-</div>
 
 ## 🤝 Contributing
 
@@ -113,97 +142,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=100&section=footer" width="100%"/>
 </div>
-
-## 🚀 Tech Stack
-
-*   **Frontend:**
-    *   [React](https://reactjs.org/) - A JavaScript library for building user interfaces.
-    *   [Vite](https://vitejs.dev/) - A fast build tool for modern web development.
-    *   [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework for rapid UI development.
-*   **Backend:**
-    *   [Node.js](https://nodejs.org/) - A JavaScript runtime built on Chrome's V8 JavaScript engine.
-    *   [Express](https://expressjs.com/) - A minimal and flexible Node.js web application framework.
-    *   [MongoDB](https://www.mongodb.com/) - A NoSQL database for storing your journal entries.
-*   **AI & Machine Learning:**
-    *   (Coming Soon)
-
-## 🏁 Getting Started
-
-### Prerequisites
-
-*   [Node.js](https://nodejs.org/en/download/) (v14 or later)
-*   [MongoDB](https://www.mongodb.com/try/download/community) (or a MongoDB Atlas account)
-
-### Installation & Setup
-
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/your-username/ai-journal-app.git
-    cd ai-journal-app
-    ```
-
-2.  **Install server dependencies:**
-    ```sh
-    cd server
-    npm install
-    ```
-
-3.  **Install client dependencies:**
-    ```sh
-    cd ../client
-    npm install
-    ```
-
-4.  **Set up environment variables:**
-    *   Create a `.env` file in the `server` directory.
-    *   Add the following variables:
-        ```
-        PORT=5000
-        MONGODB_URI=your_mongodb_connection_string
-        ```
-
-### Running the Application
-
-1.  **Start the backend server:**
-    ```sh
-    cd server
-    npm start
-    ```
-
-2.  **Start the frontend development server:**
-    ```sh
-    cd ../client
-    npm run dev
-    ```
-
-The application will be available at `http://localhost:5173`.
-
-## 📂 Project Structure
-
-```
-ai-journal-app/
-├── client/         # React Frontend
-│   ├── src/
-│   │   ├── components/
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── public/
-│   ├── index.html
-│   └── ...
-├── server/         # Node.js Backend
-│   ├── models/
-│   ├── routes/
-│   ├── controllers/
-│   └── server.js
-├── .gitignore
-├── package.json
-└── README.md
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a pull request.
-
-## 📝 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

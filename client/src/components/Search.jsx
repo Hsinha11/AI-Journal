@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 
-// Note the new props: onSearch and isLoading, which are passed from JournalPage
+/**
+ * A component for searching journal entries.
+ * @param {object} props - The component's props.
+ * @param {function} props.onSearch - The function to call when a search is performed.
+ * @param {boolean} props.isLoading - Whether a search is in progress.
+ * @returns {JSX.Element} The rendered component.
+ */
 const Search = ({ onSearch, isLoading }) => {
-    // This component only needs to manage the state of the input field
     const [query, setQuery] = useState('');
 
-    // This handler no longer contains fetch logic.
+    /**
+     * Handles the form submission.
+     * @param {React.FormEvent<HTMLFormElement>} e - The form event.
+     */
     // It just calls the onSearch function passed down from its parent.
     const handleSubmit = (e) => {
         e.preventDefault();

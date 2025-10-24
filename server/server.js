@@ -11,7 +11,10 @@ const saltRounds = 10;
 // Replace this with your actual connection string from Atlas
 const MONGO_URI = process.env.MONGO_URI;
 
-// Initialize database connection before starting the server
+/**
+ * Initializes the database connection.
+ * Exits the process if the connection fails.
+ */
 const initializeDatabase = async () => {
     try {
         await mongoose.connect(MONGO_URI);
@@ -37,6 +40,12 @@ const port = 8000;
 app.use(express.json());
 
 // --- Middleware ---
+/**
+ * Middleware to authenticate a token.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ */
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
@@ -55,6 +64,12 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+/**
+ * Middleware to check if a user is an admin.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ */
 const checkAdmin = (req, res, next) => {
     // Defensive check
     if (req.user && req.user.isAdmin) {
@@ -67,6 +82,15 @@ const checkAdmin = (req, res, next) => {
 };
 
 // --- Routes ---
+/**
+ * Route for user login.
+ * @name post/api/login
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -107,11 +131,29 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
+/**
+ * Route for admin access.
+ * @name get/api/admin
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.get("/api/admin", authenticateToken, checkAdmin, (req, res) => {
     res.json({
         message: `Welcome, Admin ${req.user.name}! You have accessed the admin-only area.`,
     });
 });
+/**
+ * Route for user registration.
+ * @name post/api/register
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.post("/api/register", async (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -143,7 +185,15 @@ app.post("/api/register", async (req, res) => {
     }
 });
 
-// In server/server.js
+/**
+ * Route to create a new journal entry.
+ * @name post/api/entries
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.post("/api/entries", authenticateToken, async (req, res) => {
     const { content } = req.body;
     if (!content) {
@@ -175,7 +225,15 @@ app.post("/api/entries", authenticateToken, async (req, res) => {
     res.status(201).json(newEntry);
 });
 
-// GET all journal entries for the logged-in user
+/**
+ * Route to get all journal entries for the logged-in user.
+ * @name get/api/entries
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.get('/api/entries', authenticateToken, async (req, res) => {
     try {
         const entries = await JournalEntry.find({ author: req.user.id }).sort({ createdAt: -1 });
@@ -184,33 +242,24 @@ app.get('/api/entries', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Server error fetching entries.' });
     }
 });
-// server/server.js
-
-app.delete("/api/entries/:id", authenticateToken, async (req, res) => {
-    const entryId = req.params.id;
-
-    // First, delete the entry from MongoDB
-    const deletedEntry = await JournalEntry.findOneAndDelete({
-        _id: entryId,
-        author: req.user.id
-    });
-
-    if (!deletedEntry) {
-        res.status(404);
-        throw new Error("Entry not found or user not authorized.");
-    }
-
-    // --- YOUR NEW LOGIC HERE ---
-    // Now, delete the corresponding vector from Pinecone
-    try {
-        await aiService.deleteVector(entryId);
-    } catch (aiError) {
-        // Log the error, but don't fail the request. Deleting from MongoDB is the priority.
-        console.error("Pinecone delete failed but entry was removed from MongoDB:", aiError.message);
-    }
-
-    res.json({ message: 'Entry deleted successfully from all databases.' });
-});
+/**
+ * Route to delete a journal entry.
+ * @name delete/api/entries/:id
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
+/**
+ * Route to delete a journal entry by id
+ * @name delete/api/entries/:id
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
     try {
         const entryId = req.params.id;
@@ -236,40 +285,24 @@ app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.put("/api/entries/:id", authenticateToken, async (req, res) => {
-    const { content } = req.body;
-    if (!content) {
-        res.status(400);
-        throw new Error("Content cannot be empty.");
-    }
-
-    // 1. Update the entry in MongoDB and get the new version
-    const updatedEntry = await JournalEntry.findOneAndUpdate(
-        { _id: req.params.id, author: req.user.id },
-        { content },
-        { new: true }
-    );
-
-    if (!updatedEntry) {
-        res.status(404);
-        throw new Error("Entry not found or user not authorized.");
-    }
-
-    // 2. Immediately update the Pinecone index with the new embedding
-    try {
-        const embedding = await aiService.generateEmbedding(updatedEntry.content);
-        const metadata = {
-        content: updatedEntry.content.substring(0, 1000)
-    };
-        await aiService.upsertVector(updatedEntry._id.toString(), embedding,metadata);
-        console.log(`Successfully updated vector for entry ${updatedEntry._id} in Pinecone with metadata`);
-    } catch (aiError) {
-        console.error("Pinecone update failed but entry was saved to MongoDB:", aiError.message);
-    }
-
-    // 3. Send the success response
-    res.json(updatedEntry);
-});
+/**
+ * Route to update a journal entry.
+ * @name put/api/entries/:id
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
+/**
+ * Route to update a journal entry by id
+ * @name put/api/entries/:id
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.put('/api/entries/:id',authenticateToken, async (req,res)=>{
      try{
         const {content} = req.body;
@@ -293,8 +326,15 @@ app.put('/api/entries/:id',authenticateToken, async (req,res)=>{
      }
 })
 
-// server/server.js
-
+/**
+ * Route to search for journal entries.
+ * @name get/api/search
+ * @function
+ * @memberof module:server/server
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.get("/api/search", authenticateToken,async (req, res) => {
     const { q: query } = req.query;
 
@@ -327,6 +367,9 @@ app.get("/api/search", authenticateToken,async (req, res) => {
     
     res.json(sortedEntries);
 });
+/**
+ * Starts the server.
+ */
 const startServer = async () => {
     await aiService.init();
     // Start the server only after database connection is established
